@@ -1,14 +1,15 @@
 #include <stdio.h>
 #include <windows.h>
 
-int soma(int a,int b);
-int mult(int a,int b);
-int sub(int a,int b);
-int divisao(int a,int b);
+double soma(double a,double b);
+double mult(double a,double b);
+double sub(double a,double b);
+double divisao(double a,double b);
 void menu();
  
 int main() {
- int con = 0, a = 0, b=0,m;
+ double a = 0, b=0,m;
+ int con = 0;
 do{
     system("cls");
 menu();
@@ -18,32 +19,32 @@ menu();
 switch (con)
 {
 case 1:
-        scanf("%d", &a);
-        scanf("%d", &b);
+        scanf("%lf", &a);
+        scanf("%lf", &b);
         
-    printf("O valor da soma eh: %d\n",soma(a,b));
+    printf("O valor da soma eh: %lf\n",soma(a,b));
     break;
  
 case 2:
-        scanf("%d", &a);
-        scanf("%d", &b);
-    printf("O valor da subtracao eh: %d\n",sub(a,b));
+        scanf("%lf", &a);
+        scanf("%lf", &b);
+    printf("O valor da subtracao eh: %lf\n",sub(a,b));
     break;
 
 case 3:
-        scanf("%d", &a);
-        scanf("%d", &b);
-    printf("O valor da multiplicacao eh: %d\n",mult(a,b));
+        scanf("%lf", &a);
+        scanf("%lf", &b);
+    printf("O valor da multiplicacao eh: %lf\n",mult(a,b));
     break;
 
 case 4:
-        scanf("%d", &a);
-        scanf("%d", &b);
+        scanf("%lf", &a);
+        scanf("%lf", &b);
         if(b==0){
 printf("Nao e possivel dividir por 0...\n");
         }else{
         
-    printf("O valor da divisao eh: %d\n",divisao(a,b));
+    printf("O valor da divisao eh: %lf\n",divisao(a,b));
         }
     break;
 
@@ -64,23 +65,23 @@ return(0);
 }
    
 
-int soma(int a, int b) {
-    int r =0;
+double soma(double a, double b) {
+    double r =0;
     r =(a + b);
     return(r);
 }
-int mult(int a, int b) {
-    int r =0;
+double mult(double a, double b) {
+    double r =0;
     r =(a * b);
     return(r);
 }
-int sub(int a, int b) {
-    int r =0;
+double sub(double a, double b) {
+    double r =0;
     r =(a - b);
     return(r);
 }
-int divisao(int a, int b) {
-    int r =0;
+double divisao(double a, double b) {
+    double r =0;
     r =(a / b);
     return(r);
 }
