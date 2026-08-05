@@ -14,7 +14,7 @@ typedef struct
 void inicializarTabuleiro(char tabuleiro[TAM][TAM]);
 void mostrarTabuleiro(char tabuleiro[TAM][TAM]);
 void posicionarNavios(char tabuleiro[TAM][TAM]);
-int realizarAtaque(char tabuleiro[TAM][TAM], int navios);
+int realizarAtaque(char tabuleiro[TAM][TAM]);
 void salvarResultado(Jogador j );
 void lerResultado();
 
@@ -39,11 +39,11 @@ scanf("%s", jogador.nome);
 do
 {
 mostrarTabuleiro(tabuleiro);
-realizarAtaque(tabuleiro, navios);
+realizarAtaque(tabuleiro);
+
+printf(" aaaaaa %d\nC",navios);
+}while(navios < 3);
 salvarResultado(jogador);
-
-} while (navios < 3);
-
   printf("Afundou todos os navios!!");
 
 
@@ -83,7 +83,7 @@ void posicionarNavios(char tabuleiro[TAM][TAM]){
     tabuleiro[6][1] = 'N';
 }
 
-int realizarAtaque(char tabuleiro[TAM][TAM], int navios){
+int realizarAtaque(char tabuleiro[TAM][TAM]){
 Jogador jogador;
 int l, c;
 
