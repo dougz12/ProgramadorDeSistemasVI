@@ -48,7 +48,21 @@ select * from alunos order by cidade, nome asc;
 select * from alunos limit 5;
 select * from alunos order by nota desc limit 5 ;
 SELECT * FROM alunos ORDER BY nota DESC LIMIT 3 OFFSET 3;
-
+SELECT COUNT(nota) AS QNT FROM alunos;
+SELECT COUNT(nota) AS QNT FROM alunos WHERE curso = 'Programação';
+SELECT AVG(nota) AS media FROM alunos;
+SELECT MIN (nota) FROM alunos;
+SELECT SUM(nota) AS total FROM alunos; 
+SELECT MIN(nota) AS menor_nota, MAX(nota) AS maior_nota, AVG(nota) AS media_notas FROM alunos; 
+SELECT cidade, COUNT(*) AS quantidade FROM alunos GROUP BY cidade;
+SELECT curso, COUNT(*) AS quantidade FROM alunos GROUP BY curso;
+SELECT cidade, AVG(nota) AS media_cidade FROM alunos GROUP BY cidade;
+SELECT curso, MAX(nota) AS maior_nota FROM alunos GROUP BY curso;
+SELECT curso, COUNT(*) AS quantidade FROM alunos GROUP BY curso HAVING COUNT(*) >= 3;
+SELECT curso, COUNT(*) AS quantidade FROM alunos GROUP BY curso HAVING COUNT(*) > 3;
+SELECT curso, AVG(nota) AS meida FROM alunos GROUP BY curso HAVING AVG(nota) > 7;
+SELECT cidade, COUNT(*) AS quantidade, AVG(nota) AS media FROM alunos  GROUP BY cidade HAVING AVG(nota) > 7 AND COUNT(*) > 3 ORDER BY media DESC; 
+SELECT nome, idade, nota FROM alunos WHERE curso = 'Programação' AND nota >= 7 ORDER BY nota DESC LIMIT 3; 
 
 
 
