@@ -1,0 +1,871 @@
+COLA DE SQL — GUIA RÁPIDO
+1. ESTRUTURA BÁSICA
+
+A consulta mais comum é:
+
+SELECT coluna1, coluna2
+FROM tabela
+WHERE condição
+ORDER BY coluna;
+Significado
+SELECT → o que quero mostrar
+FROM → de qual tabela
+WHERE → quais registros quero
+ORDER BY → como quero ordenar
+
+Exemplo:
+
+SELECT name, omega
+FROM life_registry
+WHERE omega > 50
+ORDER BY omega ASC;
+2. ORDEM DE ESCRITA DO SELECT
+
+Normalmente você escreve nesta ordem:
+
+SELECT
+FROM
+JOIN
+WHERE
+GROUP BY
+HAVING
+ORDER BY
+LIMIT
+
+Exemplo completo:
+
+SELECT d.name, COUNT(*) AS quantidade
+FROM life_registry lr
+JOIN dimensions d ON lr.dimensions_id = d.id
+WHERE lr.omega > 10
+GROUP BY d.name
+HAVING COUNT(*) > 2
+ORDER BY quantidade DESC
+LIMIT 10;
+Atenção: ordem de EXECUÇÃO é diferente
+
+Conceitualmente, o banco processa mais ou menos assim:
+
+FROM / JOIN
+↓
+WHERE
+↓
+GROUP BY
+↓
+HAVING
+↓
+SELECT
+↓
+ORDER BY
+↓
+LIMIT
+
+Isso explica algumas regras importantes.
+
+3. SELECT
+
+Escolhe as colunas que serão exibidas.
+
+SELECT name, omega
+FROM life_registry;
+
+Todas as colunas:
+
+SELECT *
+FROM life_registry;
+
+Evite * quando a questão pede colunas específicas.
+
+DISTINCT
+
+Remove valores repetidos:
+
+SELECT DISTINCT name
+FROM life_registry;
+4. FROM
+
+Indica a tabela de onde os dados vêm.
+
+SELECT name
+FROM dimensions;
+
+Tabela + apelido:
+
+SELECT lr.name
+FROM life_registry AS lr;
+
+AS cria um alias (apelido).
+
+Também pode ser:
+
+FROM life_registry lr
+5. WHERE
+
+Filtra linhas individuais.
+
+SELECT *
+FROM life_registry
+WHERE omega > 10;
+
+Operadores:
+
+=       igual
+<>      diferente
+!=      diferente
+>       maior
+<       menor
+>=      maior ou igual
+<=      menor ou igual
+
+Exemplo:
+
+WHERE omega >= 50
+6. AND / OR / NOT
+AND
+
+As duas condições precisam ser verdadeiras:
+
+WHERE omega > 10
+AND omega < 50
+OR
+
+Uma das condições precisa ser verdadeira:
+
+WHERE name = 'Richard'
+OR name = 'Morty'
+NOT
+
+Inverte a condição:
+
+WHERE NOT name = 'Richard'
+7. IN
+
+É uma forma curta de vários OR.
+
+Em vez de:
+
+WHERE name = 'Richard'
+OR name = 'Morty'
+OR name = 'Jerry'
+
+Pode escrever:
+
+WHERE name IN ('Richard', 'Morty', 'Jerry')
+
+Muito usado para dimensões:
+
+WHERE d.name IN ('C875', 'C774')
+8. BETWEEN
+
+Verifica se está dentro de um intervalo.
+
+WHERE omega BETWEEN 10 AND 50
+
+Geralmente é equivalente a:
+
+WHERE omega >= 10
+AND omega <= 50
+9. LIKE
+
+Pesquisa padrões de texto.
+
+%
+
+Representa qualquer quantidade de caracteres.
+
+WHERE name LIKE 'Richard%'
+
+Encontra:
+
+Richard
+Richard Smith
+Richard Parker
+Richard123
+
+Porque começa com Richard.
+
+%Richard
+
+Termina com Richard:
+
+WHERE name LIKE '%Richard'
+%Richard%
+
+Richard aparece em qualquer lugar:
+
+WHERE name LIKE '%Richard%'
+_
+
+Representa exatamente um caractere:
+
+WHERE name LIKE 'R_chard'
+10. NULL
+
+NULL significa ausência de valor.
+
+ERRADO:
+
+WHERE omega = NULL
+
+CERTO:
+
+WHERE omega IS NULL
+
+Para valores preenchidos:
+
+WHERE omega IS NOT NULL
+
+NULL não é a mesma coisa que:
+
+0
+''
+11. ORDER BY
+
+Ordena o resultado.
+
+Crescente:
+
+ORDER BY omega ASC;
+
+ASC = crescente.
+
+Decrescente:
+
+ORDER BY omega DESC;
+
+DESC = decrescente.
+
+Se não escrever nada, normalmente é crescente:
+
+ORDER BY omega;
+
+Pode ordenar por mais de uma coluna:
+
+ORDER BY omega ASC, name ASC;
+12. AS — ALIAS
+
+Dá um nome temporário para coluna ou tabela.
+
+SELECT omega * 1.618 AS N
+FROM life_registry;
+
+Ou:
+
+SELECT omega * 1.618 AS "Fator N"
+FROM life_registry;
+
+Para tabelas:
+
+FROM life_registry AS lr
+
+Então:
+
+SELECT lr.name
+FROM life_registry AS lr;
+13. FUNÇÕES MATEMÁTICAS
+ROUND
+
+Arredonda.
+
+ROUND(10.5678, 3)
+
+Resultado:
+
+10.568
+
+No exercício do Richard:
+
+ROUND(omega * 1.618, 3)
+Operações
+omega + 10
+omega - 10
+omega * 1.618
+omega / 2
+14. FUNÇÕES DE AGREGAÇÃO
+
+Servem para calcular informações sobre várias linhas.
+
+COUNT
+
+Conta:
+
+COUNT(*)
+SUM
+
+Soma:
+
+SUM(omega)
+AVG
+
+Média:
+
+AVG(omega)
+MAX
+
+Maior:
+
+MAX(omega)
+MIN
+
+Menor:
+
+MIN(omega)
+
+Exemplo:
+
+SELECT AVG(omega)
+FROM life_registry;
+15. GROUP BY
+
+Agrupa registros.
+
+Exemplo:
+
+SELECT dimensions_id, COUNT(*)
+FROM life_registry
+GROUP BY dimensions_id;
+
+Isso responde:
+
+Quantos personagens existem em cada dimensão?
+
+Se selecionar uma coluna normal junto com uma função de agregação, normalmente essa coluna precisa estar no GROUP BY.
+
+Exemplo:
+
+SELECT dimensions_id, COUNT(*)
+FROM life_registry
+GROUP BY dimensions_id;
+16. WHERE x HAVING
+
+Essa diferença é MUITO importante.
+
+WHERE
+
+Filtra antes do agrupamento.
+
+WHERE omega > 10
+HAVING
+
+Filtra depois do GROUP BY.
+
+HAVING COUNT(*) > 5
+
+Exemplo:
+
+SELECT dimensions_id, COUNT(*) AS quantidade
+FROM life_registry
+WHERE omega > 10
+GROUP BY dimensions_id
+HAVING COUNT(*) > 2;
+
+Pense:
+
+WHERE  → filtra registros
+HAVING → filtra grupos
+
+17. JOIN
+
+Usado para juntar informações de tabelas diferentes.
+
+Imagine:
+
+dimensions
+id | name
+
+life_registry
+id | name | omega | dimensions_id
+
+Existe uma relação:
+
+life_registry.dimensions_id
+        ↓
+dimensions.id
+
+Então:
+
+SELECT lr.name, d.name
+FROM life_registry lr
+JOIN dimensions d
+    ON lr.dimensions_id = d.id;
+18. INNER JOIN
+
+É o JOIN mais comum.
+
+SELECT *
+FROM tabela1
+INNER JOIN tabela2
+    ON tabela1.id = tabela2.id;
+
+Retorna somente registros que possuem correspondência nas duas tabelas.
+
+JOIN sozinho geralmente significa:
+
+INNER JOIN
+19. LEFT JOIN
+
+Mantém todos os registros da tabela da esquerda, mesmo que não tenham correspondência.
+
+SELECT *
+FROM dimensions d
+LEFT JOIN life_registry lr
+    ON d.id = lr.dimensions_id;
+
+Mesmo uma dimensão sem nenhum personagem pode aparecer.
+
+Resumo:
+
+INNER JOIN → somente correspondências
+LEFT JOIN  → tudo da esquerda + correspondências
+20. RIGHT JOIN
+
+É o inverso:
+
+RIGHT JOIN
+
+Mantém tudo da tabela da direita.
+
+É menos usado porque geralmente podemos inverter a ordem das tabelas e usar LEFT JOIN.
+
+21. FULL OUTER JOIN
+
+Mantém registros dos dois lados, mesmo sem correspondência.
+
+FULL OUTER JOIN
+
+Nem todos os bancos suportam essa sintaxe da mesma maneira.
+
+22. ON x WHERE NO JOIN
+
+ON define como as tabelas se relacionam:
+
+ON lr.dimensions_id = d.id
+
+WHERE define quais registros queremos depois:
+
+WHERE d.name = 'C875'
+
+Não confundir.
+
+23. PRIMARY KEY — PK
+
+Chave primária.
+
+Identifica exclusivamente cada registro.
+
+id (PK)
+
+Características:
+
+identifica uma linha;
+não deve se repetir;
+não pode ser NULL.
+
+Exemplo:
+
+id | name
+1  | C875
+2  | C774
+24. FOREIGN KEY — FK
+
+Chave estrangeira.
+
+É uma coluna que referencia a PK de outra tabela.
+
+Exemplo:
+
+life_registry
+dimensions_id (FK)
+
+Ela aponta para:
+
+dimensions
+id (PK)
+
+Relação:
+
+dimensions.id
+      ↑
+      |
+life_registry.dimensions_id
+25. INSERT
+
+Insere registros.
+
+INSERT INTO dimensions (id, name)
+VALUES (1, 'C875');
+
+Vários:
+
+INSERT INTO dimensions (id, name)
+VALUES
+(1, 'C875'),
+(2, 'C774');
+26. UPDATE
+
+Altera registros existentes.
+
+UPDATE dimensions
+SET name = 'C875'
+WHERE id = 1;
+CUIDADO
+
+Nunca esqueça o WHERE quando quiser alterar apenas uma linha.
+
+UPDATE dimensions
+SET name = 'C875';
+
+Isso pode alterar todas as linhas.
+
+27. DELETE
+
+Apaga registros.
+
+DELETE FROM dimensions
+WHERE id = 1;
+CUIDADO
+
+Sem WHERE:
+
+DELETE FROM dimensions;
+
+pode apagar todos os registros da tabela.
+
+28. CREATE TABLE
+
+Cria tabela.
+
+CREATE TABLE dimensions (
+    id INTEGER PRIMARY KEY,
+    name VARCHAR(100)
+);
+
+Com chave estrangeira:
+
+CREATE TABLE life_registry (
+    id INTEGER PRIMARY KEY,
+    name VARCHAR(100),
+    omega NUMERIC,
+    dimensions_id INTEGER,
+    FOREIGN KEY (dimensions_id)
+        REFERENCES dimensions(id)
+);
+29. TIPOS DE DADOS IMPORTANTES
+INTEGER
+
+Número inteiro:
+
+INTEGER
+
+Exemplo:
+
+10
+250
+-5
+NUMERIC / DECIMAL
+
+Número decimal com precisão:
+
+NUMERIC
+
+Exemplo:
+
+10.25
+1.618
+VARCHAR
+
+Texto com tamanho variável:
+
+VARCHAR(100)
+CHAR
+
+Texto de tamanho fixo:
+
+CHAR(10)
+DATE
+
+Data:
+
+DATE
+30. DELETE x DROP x TRUNCATE
+
+Não confundir:
+
+DELETE
+
+Remove registros.
+
+DELETE FROM tabela
+WHERE id = 5;
+TRUNCATE
+
+Remove todos os registros da tabela.
+
+TRUNCATE TABLE tabela;
+
+A tabela continua existindo.
+
+DROP
+
+Remove a estrutura da tabela.
+
+DROP TABLE tabela;
+
+Depois disso, a tabela deixa de existir.
+
+Resumo:
+
+DELETE   → remove linhas
+TRUNCATE → remove todas as linhas
+DROP     → remove a tabela
+31. UNION x JOIN
+JOIN
+
+Junta colunas/tabelas relacionadas.
+
+Tabela A + Tabela B
+lado a lado
+UNION
+
+Junta resultados um embaixo do outro.
+
+SELECT name FROM dimensions
+UNION
+SELECT name FROM life_registry;
+
+As consultas precisam ter quantidade e tipos compatíveis de colunas.
+
+UNION normalmente elimina duplicados.
+
+UNION ALL mantém duplicados.
+
+32. LIMIT
+
+Limita a quantidade de resultados.
+
+SELECT *
+FROM life_registry
+LIMIT 10;
+
+Pode combinar com ORDER BY:
+
+SELECT *
+FROM life_registry
+ORDER BY omega DESC
+LIMIT 5;
+
+Isso pega os 5 maiores omega.
+
+33. DISTINCT x GROUP BY
+
+DISTINCT:
+
+SELECT DISTINCT name
+FROM tabela;
+
+Serve principalmente para remover duplicados.
+
+GROUP BY:
+
+SELECT name, COUNT(*)
+FROM tabela
+GROUP BY name;
+
+Serve para formar grupos, geralmente junto de COUNT, SUM, AVG, etc.
+
+34. EXEMPLO DO EXERCÍCIO DO RICHARD
+
+Tabelas:
+
+dimensions
+----------------
+id
+name
+
+life_registry
+----------------
+id
+name
+omega
+dimensions_id
+
+Objetivo:
+
+Selecionar Richards das dimensões C875 e C774, calcular N = omega × 1.618, com 3 casas decimais, ordenando pelo menor omega.
+
+Raciocínio:
+
+1. Preciso das duas tabelas
+FROM life_registry lr
+JOIN dimensions d
+    ON lr.dimensions_id = d.id
+2. Preciso somente dos Richards
+WHERE lr.name LIKE 'Richard%'
+3. Preciso das duas dimensões
+AND d.name IN ('C875', 'C774')
+4. Preciso calcular N
+ROUND(lr.omega * 1.618, 3)
+5. Preciso ordenar pelo omega
+ORDER BY lr.omega ASC
+
+Consulta:
+
+SELECT
+    lr.name,
+    ROUND(lr.omega * 1.618, 3) AS "Fator N"
+FROM life_registry lr
+JOIN dimensions d
+    ON lr.dimensions_id = d.id
+WHERE lr.name LIKE 'Richard%'
+  AND d.name IN ('C875', 'C774')
+ORDER BY lr.omega ASC;
+35. COMO PENSAR EM UMA QUESTÃO DE SQL
+
+Quando receber um exercício, procure estas palavras:
+
+"selecione"
+
+→ SELECT
+
+"da tabela"
+
+→ FROM
+
+"onde"
+
+→ WHERE
+
+"começa com"
+
+→ LIKE 'texto%'
+
+"contém"
+
+→ LIKE '%texto%'
+
+"entre"
+
+→ BETWEEN
+
+"um destes valores"
+
+→ IN
+
+"não possui valor"
+
+→ IS NULL
+
+"relacionado à outra tabela"
+
+→ JOIN ... ON
+
+"quantidade"
+
+→ COUNT
+
+"média"
+
+→ AVG
+
+"soma"
+
+→ SUM
+
+"maior"
+
+→ MAX ou ORDER BY ... DESC
+
+"menor"
+
+→ MIN ou ORDER BY ... ASC
+
+"agrupado por"
+
+→ GROUP BY
+
+"grupos que"
+
+→ HAVING
+
+"ordenado"
+
+→ ORDER BY
+
+"maiores primeiro"
+
+→ DESC
+
+"menores primeiro"
+
+→ ASC
+
+"arredondado para 3 casas"
+
+→ ROUND(valor, 3)
+
+36. MODELO MENTAL PARA NÃO SE PERDER
+
+Quando tiver uma questão, monte assim:
+
+SELECT
+    -- O QUE PRECISO MOSTRAR?
+FROM
+    -- DE ONDE VEM?
+JOIN
+    -- PRECISO DE OUTRA TABELA?
+    ON
+    -- COMO ELAS SE RELACIONAM?
+WHERE
+    -- QUAIS LINHAS?
+GROUP BY
+    -- PRECISO AGRUPAR?
+HAVING
+    -- PRECISO FILTRAR OS GRUPOS?
+ORDER BY
+    -- COMO ORDENAR?
+LIMIT
+    -- QUANTOS RESULTADOS?
+
+Nem toda consulta precisa de todas essas partes.
+
+37. REGRAS DE OURO
+SELECT = o que mostrar
+FROM   = de onde pegar
+JOIN   = juntar tabelas
+ON     = como elas se relacionam
+WHERE  = filtrar linhas
+GROUP BY = agrupar
+HAVING = filtrar grupos
+ORDER BY = ordenar
+LIMIT = limitar quantidade
+
+E memorize especialmente:
+
+WHERE  → antes do GROUP BY
+HAVING → depois do GROUP BY
+
+PK → identifica o registro
+FK → aponta para outra tabela
+
+= NULL → ERRADO
+IS NULL → CERTO
+
+LIKE 'Richard%' → começa com Richard
+LIKE '%Richard%' → contém Richard
+
+ASC → menor → maior
+DESC → maior → menor
+
+INNER JOIN → somente correspondências
+LEFT JOIN → mantém tudo da esquerda
+FORMATO MAIS COMUM EM PROVAS
+SELECT coluna1, coluna2
+FROM tabela1 t1
+JOIN tabela2 t2
+    ON t1.id = t2.tabela1_id
+WHERE condição
+GROUP BY coluna1, coluna2
+HAVING condição_do_grupo
+ORDER BY coluna1 ASC;
+
+Se a questão não pedir determinada parte, simplesmente retire-a.
